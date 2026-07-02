@@ -263,6 +263,52 @@ p {
   margin-top: 0.3rem;
 }
 
+.exposure-card {
+  margin: 1.5rem 0 2rem;
+  padding: 1.2rem 1.4rem;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-left: 4px solid #0ea5e9;
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.exposure-card h3{
+  font-size:.95rem;
+  font-weight:600;
+  text-transform:uppercase;
+  letter-spacing:.05em;
+  color:var(--muted);
+}
+
+.exposure-card p {
+  margin: 0.35rem 0;
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.exposure-message {
+  font-size: 1.05rem;
+  line-height: 1.6;
+  font-weight: 600;
+  margin: 0;
+}
+
+.exposure-card small {
+  display: block;
+  margin-top: 0.45rem;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.exposure-note {
+  margin: 0;
+  font-size: .88rem;
+  color: var(--muted);
+}
+
 .dashboard-tools {
   margin-top: 0.7rem;
   display: flex;

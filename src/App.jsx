@@ -11,7 +11,8 @@ import { CITY_COORDINATES } from './constants/cities';
 import {
   estimateWeeklyMonthlyAverages,
   fetchAirQualityByCoords,
-  fetchCityComparisons
+  fetchCityComparisons,
+  estimateExposureTime
 } from './services/airQualityService';
 
 const DEFAULT_POSITION = {
@@ -223,6 +224,11 @@ export default function App() {
   }, [position.lat, position.lon]);
 
   const analytics = useMemo(() => estimateWeeklyMonthlyAverages(trend), [trend]);
+  const exposureEstimate = useMemo(
+    () => estimateExposureTime(trend, current?.us_aqi), 
+    [trend, current]
+  );
+
 
   const toggleTheme = () => {
     setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
@@ -290,7 +296,7 @@ export default function App() {
             isRefreshing={isRefreshing}
           />
           <LocationMap center={position} nearbyPoints={nearbyPoints} />
-          <AlertsPanel cityName={position.cityName} current={current} />
+          <AlertsPanel cityName={position.cityName} current={current} exposureEstimate={exposureEstimate}/>
           <HealthAdvisory />
           <SolutionsAwareness />
           <AnalyticsInsights analytics={analytics} trend={trend} timeRange={timeRange} />
