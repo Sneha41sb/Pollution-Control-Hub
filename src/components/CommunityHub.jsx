@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 
 const STORAGE_KEY = 'pollution-community-reports';
-const VOTE_THRESHOLD = 5; 
-const X_DAYS = 7; 
+const VOTES_STORAGE_KEY = 'pollution-community-votes';
+const VOTE_THRESHOLD = 5;
+const X_DAYS = 7;
 
 function readReports() {
   try {
@@ -13,9 +14,19 @@ function readReports() {
   }
 }
 
+function readVotedIds() {
+  try {
+    const raw = localStorage.getItem(VOTES_STORAGE_KEY);
+    return raw ? new Set(JSON.parse(raw)) : new Set();
+  } catch {
+    return new Set();
+  }
+}
+
 export default function CommunityHub() {
   const [reports, setReports] = useState(() => readReports());
-  const [filter, setFilter] = useState('All'); 
+  const [votedIds, setVotedIds] = useState(() => readVotedIds());
+  const [filter, setFilter] = useState('All');
   const [form, setForm] = useState({
     title: '',
     description: '',
@@ -26,6 +37,10 @@ export default function CommunityHub() {
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(reports));
   }, [reports]);
+
+  useEffect(() => {
+    localStorage.setItem(VOTES_STORAGE_KEY, JSON.stringify([...votedIds]));
+  }, [votedIds]);
 
   const onSubmit = (event) => {
     event.preventDefault();
@@ -60,10 +75,12 @@ export default function CommunityHub() {
   };
 
   const vote = (id) => {
+    if (votedIds.has(id)) return;
+
     setReports((prev) =>
       prev.map((report) => {
         if (report.id !== id) return report;
-        
+
         const nextVotes = report.votes + 1;
         const createdDate = new Date(report.createdAt);
         const ageInDays = (new Date() - createdDate) / (1000 * 60 * 60 * 24);
@@ -87,6 +104,8 @@ export default function CommunityHub() {
         };
       })
     );
+
+    setVotedIds((prev) => new Set(prev).add(id));
   };
 
   const filteredReports = reports.filter((report) => {
@@ -148,7 +167,9 @@ export default function CommunityHub() {
                     {report.status}
                   </span>
                 </div>
-                <button onClick={() => vote(report.id)} type="button">Upvote ({report.votes})</button>
+                <button onClick={() => vote(report.id)} type="button" disabled={votedIds.has(report.id)}>
+                  {votedIds.has(report.id) ? 'Voted' : 'Upvote'} ({report.votes})
+                </button>
               </div>
               <p>{report.description}</p>
               {report.image && <img src={report.image} alt={report.title} />}
